@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+<launch>
+
+  <arg name="TOPIC_LEG_STATE" default="/leg_3dof/joint_states"/>
+  <arg name="TOPIC_LEG_COMMAND" default="/leg_3dof/joint_torque_controller/command"/>
+
+  <param name="topic_leg_state" value="$(arg TOPIC_LEG_STATE)"/>
+  <param name="topic_leg_command" value="$(arg TOPIC_LEG_COMMAND)"/>
+
+  <!-- frame control-->
+  <!-- <arg name="TOPIC_FRAME_STATE" default="/leg_3dof_frame/joint_states"/>
+  <arg name="TOPIC_FRAME_COMMAND" default="/leg_3dof_frame/joint_torque_controller/command"/>
+
+  <param name="topic_frame_state" value="$(arg TOPIC_FRAME_STATE)"/>
+  <param name="topic_frame_command" value="$(arg TOPIC_FRAME_COMMAND)"/> -->
+
+  <!-- ros_control hexapod launch file -->
+  <include file="$(find robot_ros_control)/launch/leg_3dof_control.launch"/>
+  <!-- <include file="$(find robot_ros_control)/launch/frame_control.launch"/> -->
+
+  <!-- convert joint states to TF transforms for rviz, etc -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+	respawn="false" output="screen">
+    <remap from="/joint_states" to="/leg_3dof/joint_states" />
+  </node>
+
+  <!-- frame control-->
+  <!-- <node name="frame_state_publisher" pkg="frame_state_publisher" type="frame_state_publisher"
+	respawn="false" output="screen">
+    <remap from="/frame_states" to="/leg_3dof_frame/joint_states" />
+  </node> -->
+
+  <node pkg="leg_3dof_controller" name="leg_3dof" type="leg_3dof_node" output="screen"/>
+</launch>
